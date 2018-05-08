@@ -1,0 +1,5 @@
+pip
+setuptools
+pytz
+
+Django==2.0.5

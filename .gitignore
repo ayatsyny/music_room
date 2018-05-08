@@ -1,0 +1,27 @@
+# Pycharm
+.idea/
+
+# MacOS file
+*.DS_Store
+
+# Compile files
+__pycache__/
+*.py[cod]
+
+# DB
+db.sqlite3
+
+# MEDIA
+media/
+!media/.gitkeep
+
+# STATIC
+static/
+!static/.gitkeep
+
+!apps/.gitkeep
+!templates/.gitkeep
+
+# Settings
+settings/dev.py
+settings/local.py
