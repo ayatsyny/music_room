@@ -19,7 +19,6 @@ media/
 static/
 !static/.gitkeep
 
-!apps/.gitkeep
 !templates/.gitkeep
 
 # Settings
