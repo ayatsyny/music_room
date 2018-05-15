@@ -1,26 +1,36 @@
 # Pycharm
 .idea/
 
-# MacOS file
+# MacOS files
 *.DS_Store
 
-# Compile files
-__pycache__/
+# Compile python files
 *.py[cod]
+__pycache__/
 
-# DB
+# Translated files
+*.mo
+*.pot
+
+#  Sqlite DB
 db.sqlite3
 
-# MEDIA
-media/
-!media/.gitkeep
-
 # STATIC
-static/
-!static/.gitkeep
+!src/static/.gitkeep
 
-!templates/.gitkeep
+# Musicroom Templates
+!src/templates/.gitkeep
 
-# Settings
-settings/dev.py
-settings/local.py
+# Config directory
+conf/**
+!conf/local_settings.py.exp
+
+# Empty var directories
+var/log/**
+!var/log/.gitkeep
+
+var/media/**
+!var/media/.gitkeep
+
+var/tmp/**
+!var/tmp/.gitkeep
