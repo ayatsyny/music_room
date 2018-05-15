@@ -6,7 +6,7 @@ SECRET_KEY = 'gggggsdgfjhsdgfjhsgfjhgkldsjfkldsjflkdsjflksdjflsdkjgfklsdjgdfslkj
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -30,7 +30,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'musicroom.urls'
+ROOT_URLCONF = 'src.musicroom.urls'
 
 TEMPLATES = [
     {
