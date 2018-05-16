@@ -23,7 +23,7 @@ db.sqlite3
 
 # Config directory
 conf/**
-!conf/local_settings.py.exp
+!conf/local_settings.py.sample
 
 # Empty var directories
 var/log/**

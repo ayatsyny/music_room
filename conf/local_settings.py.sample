@@ -1,0 +1,29 @@
+_domain = 'mr.dev'
+
+DEBUG = True
+
+ALLOWED_HOSTS = ['127.0.0.1', _domain]
+INTERNAL_IPS = ('127.0.0.1',)
+
+ADMINS = (
+    ('Admin', 'admin@{}'.format(_domain)),
+)
+
+DB_NAME = 'db'
+DB_USER = 'db'
+DB_PASS = 'passowd'
+DB_HOST = '127.0.0.1'
+DB_PORT = '5432'
+
+
+TIME_ZONE = 'Europe/Kiev'
+LANGUAGE_CODE = 'en-us'
+
+SECRET_KEY = 'dev'
+
+
+SOCIAL_AUTH_FACEBOOK_KEY = ''
+SOCIAL_AUTH_FACEBOOK_SECRET = ''
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = ''
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = ''
