@@ -3,3 +3,5 @@ setuptools
 pytz
 
 Django==2.0.5
+Unipath==1.1
+psycopg2-binary==2.7.4

@@ -1,12 +1,35 @@
 import os
+import sys
+from unipath import Path
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-SECRET_KEY = 'gggggsdgfjhsdgfjhsgfjhgkldsjfkldsjflkdsjflksdjflsdkjgfklsdjgdfslkjgfdlkj'
+BASE_DIR = Path(__file__).absolute().ancestor(2)  # django project dir (src)
+ROOT_DIR = BASE_DIR.parent                        # repository root dir
 
-DEBUG = True
+sys.path.append(ROOT_DIR.child('conf'))
+try:
+    import local_settings
+    ls = local_settings.__dict__
+except ImportError:
+    raise RuntimeError('Please, provide your local configuration for this project.\n'
+                       'You need to create conf/local_settings.py with your local settings.')
+finally:
+    sys.path.pop()
 
-ALLOWED_HOSTS = ['*']
+SECRET_KEY = ls.get('SECRET_KEY', '')
+
+DEBUG = ls.get('DEBUG', False)
+INTERNAL_IPS = ls.get('INTERNAL_IPS', ('127.0.0.1',))
+
+ADMINS = ls.get('ADMINS', ())
+if not DEBUG and not len(ADMINS):
+    raise AssertionError('ADMINS must be non empty')
+
+ALLOWED_HOSTS = ls.get('ALLOWED_HOSTS', ls['_domain'])
+
+SITE_ID = 1
+
+AUTH_USER_MODEL = 'users.User'
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -30,12 +53,12 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'src.musicroom.urls'
+ROOT_URLCONF = 'musicroom.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR.child('templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -52,8 +75,12 @@ WSGI_APPLICATION = 'musicroom.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': ls.get('DB_NAME', ''),
+        'USER': ls.get('DB_USER', ''),
+        'PASSWORD': ls.get('DB_PASS', ''),
+        'HOST': ls.get('DB_HOST', 'localhost'),
+        'PORT': ls.get('DB_PORT', '5432'),
     }
 }
 
@@ -72,16 +99,15 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-AUTH_USER_MODEL = 'users.User'
-
-LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'UTC'
+TIME_ZONE = ls.get('TIME_ZONE', 'Europe/Kiev')
+LANGUAGE_CODE = ls.get('LANGUAGE_CODE', 'en-us')
 
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS = (
+    os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, 'static')),
+    # BASE_DIR.child('static'),
+)
