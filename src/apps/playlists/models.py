@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from ..songs.models import Songs
-from ..users.models import User
+from ..userauth.models import User
 
 
 class Playlist(models.Model):
