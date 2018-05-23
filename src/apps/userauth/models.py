@@ -1,3 +1,4 @@
+from annoying.fields import AutoOneToOneField
 from django.contrib.auth.base_user import BaseUserManager
 from django.core.mail import send_mail
 from django.db import models
@@ -29,6 +30,12 @@ class UserManager(BaseUserManager):
 
     def create_superuser(self, email, login, password, **extra_fields):
         return self._create_user(email, login, password, True, True, **extra_fields)
+
+    def generate_login(self, login, email):
+        tmp_id = self.objects.latest('id')
+        if not tmp_id:
+            tmp_id = 0
+        return '{}{}{}'.format(login, tmp_id, email.split('@')[0])
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -77,11 +84,13 @@ class User(AbstractBaseUser, PermissionsMixin):
         send_mail(subject, message, from_email, [self.email], **kwargs)
 
 
-class Service(models.Model):
-    name = models.CharField(_('name'), max_length=255)
+class UserInfo(models.Model):
+    user = AutoOneToOneField(User, primary_key=True, on_delete=models.CASCADE, related_name='info')
+    facebook = models.CharField(_('facebook'), max_length=128, blank=True)
+    google = models.CharField(_('google'), max_length=128, blank=True)
+    deezer = models.CharField(_('deezer'), max_length=128, blank=True)
 
-
-class AtachService(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='atach_services')
-    id_user_service = models.CharField(_('id user service'), max_length=255)
-    service = models.ForeignKey(Service, on_delete=models.CASCADE, related_name='+')
+    class Meta:
+        db_table = 'user_info'
+        verbose_name = _('user info')
+        verbose_name_plural = _('users info')
