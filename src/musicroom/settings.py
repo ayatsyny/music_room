@@ -156,6 +156,8 @@ SOCIAL_AUTH_PIPELINE = (
     'apps.userauth.social_auth_pipelines.create_user',
     'social_core.pipeline.social_auth.associate_user',
     'social_core.pipeline.social_auth.load_extra_data',
-    'social_core.pipeline.user.user_details',
+    # 'social_core.pipeline.user.user_details',
+    'apps.userauth.social_auth_pipelines.set_user_first_reg_social_info',
+    'apps.userauth.social_auth_pipelines.set_user_social_info',
     'social_core.pipeline.debug.debug',
 )
