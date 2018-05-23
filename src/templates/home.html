@@ -3,6 +3,11 @@
 {% block content %}
 	{% if user.is_authenticated %}
 			<p class="display-4">Hello, {{ user.get_full_name }}</p>
+            You can try connect
+        <a href="{% url 'social_auth:begin' 'deezer' %}">Deezer music</a><br>
+        {% if account_deezer %}
+            <a href="{{ account_deezer.url_service }}">profie user</a>
+        {% endif %}
 	{% else %}
 		<a class="lead" href="{% url 'login' %}">Log in</a>
 	{% endif %}
