@@ -85,7 +85,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 class UserInfo(models.Model):
-    user = AutoOneToOneField(User, primary_key=True, on_delete=models.CASCADE, related_name='info')
+    user = AutoOneToOneField(User, primary_key=True, on_delete=models.DO_NOTHING, related_name='info')
     facebook = models.CharField(_('facebook'), max_length=128, blank=True)
     google = models.CharField(_('google'), max_length=128, blank=True)
     deezer = models.CharField(_('deezer'), max_length=128, blank=True)
