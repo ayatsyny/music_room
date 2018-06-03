@@ -12,6 +12,10 @@ def get_ids_from_users(*users):
     return [user.pk if isinstance(user, User) else int(user) for user in users]
 
 
+class MusicalPreference(models.Model):
+    name = models.SlugField(_('slug name'))
+
+
 class UserManager(BaseUserManager):
 
     def _create_user(self, email, password, is_staff, is_superuser, **extra_fields):
@@ -83,6 +87,7 @@ class User(AbstractBaseUser, PermissionsMixin):
                                                 'active. Unselect this instead of deleting accounts.'))
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
     use_playlist = models.ManyToManyField('playlists.Playlist')
+    style_music = models.ManyToManyField(MusicalPreference)
     friends = models.ManyToManyField('self', symmetrical=True, blank=True)
 
     USERNAME_FIELD = 'email'

@@ -56,6 +56,3 @@ class VoteTime(models.Model):
     begin = models.DateTimeField(_('begin'))
     final = models.DateTimeField(_('final'))
 
-
-class MusicalPreference(models.Model):
-    name = models.SlugField(_('slug name'))
