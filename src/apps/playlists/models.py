@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from ..songs.models import Songs
+from ..songs.models import Song
 from ..userauth.models import User
 
 
@@ -13,7 +13,7 @@ class Playlist(models.Model):
     author = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE, related_name='playlist')
     data_created = models.DateTimeField(_('data created'), auto_now=True)
     vote_time = models.ForeignKey('VoteTime', blank=True, null=True, on_delete=models.DO_NOTHING)
-    songs = models.ManyToManyField(Songs, blank=True, null=True)
+    songs = models.ManyToManyField(Song, blank=True, null=True)
 
     class Meta:
         verbose_name = _('playlist')
@@ -26,7 +26,7 @@ class Playlist(models.Model):
 
 class Vote(models.Model):
     playlist = models.ForeignKey(Playlist, on_delete=models.DO_NOTHING)
-    song = models.ForeignKey(Songs, on_delete=models.DO_NOTHING)
+    song = models.ForeignKey(Song, on_delete=models.DO_NOTHING)
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     like = models.BooleanField(_('like'), default=0)
 
