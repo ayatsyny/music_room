@@ -1,6 +1,6 @@
 # Configure PyCharm Pro on linux
 
-1. Create virtualenv for example "musicroom".
+1. Create virtualenv with use python3 for example "musicroom".
 
 2. Open project in PyCharm.
 

@@ -2,8 +2,8 @@ _domain = 'mr.dev'
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', _domain]
-INTERNAL_IPS = ('127.0.0.1',)
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', _domain]
+INTERNAL_IPS = ('127.0.0.1', 'localhost')
 
 ADMINS = (
     ('Admin', 'admin@{}'.format(_domain)),
@@ -15,6 +15,7 @@ DB_PASS = 'passowd'
 DB_HOST = '127.0.0.1'
 DB_PORT = '5432'
 
+SOCIAL_AUTH_POSTGRES_JSONFIELD = True
 
 TIME_ZONE = 'Europe/Kiev'
 LANGUAGE_CODE = 'en-us'
@@ -27,3 +28,6 @@ SOCIAL_AUTH_FACEBOOK_SECRET = ''
 
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = ''
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = ''
+
+SOCIAL_AUTH_DEEZER_KEY = ''
+SOCIAL_AUTH_DEEZER_SECRET = ''
