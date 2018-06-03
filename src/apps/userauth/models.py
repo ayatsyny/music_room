@@ -2,9 +2,14 @@ from annoying.fields import AutoOneToOneField
 from django.contrib.auth.base_user import BaseUserManager
 from django.core.mail import send_mail
 from django.db import models
+from django.db.models import Q
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+
+
+def get_ids_from_users(*users):
+    return [user.pk if isinstance(user, User) else int(user) for user in users]
 
 
 class UserManager(BaseUserManager):
@@ -26,6 +31,33 @@ class UserManager(BaseUserManager):
 
     def create_superuser(self, email, password, **extra_fields):
         return self._create_user(email, password, True, True, **extra_fields)
+
+
+class UserFriendShipManager(models.Manager):
+    def are_friends(self, user1, user2):
+        user1_id, user2_id = get_ids_from_users(user1, user2)
+        return self.filter(pk=user1_id, friends__pk=user2_id).exists()
+
+    def add(self, user1, user2):
+        user1_id, user2_id = get_ids_from_users(user1, user2)
+        if user1_id == user2_id:
+            raise ValueError(_('You can not add yourself as a friend'))
+        if not self.are_friends(user1_id, user2_id):
+            through_model = self.model.friends.through
+            through_model.objects.bulk_create([
+                through_model(from_user_id=user1_id, to_user_id=user2_id),
+                through_model(from_user_id=user2_id, to_user_id=user1_id),
+            ])
+            return True
+
+    def delete(self, user1, user2):
+        user1_id, user2_id = get_ids_from_users(user1, user2)
+        if self.are_friends(user1_id, user2_id):
+            through_model = self.model.friends.through
+            through_model.objects.filter(
+                Q(from_user_id=user1_id, to_user_id=user2_id) | Q(from_user_id=user2_id, to_user_id=user1_id)
+            ).delete()
+            return True
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -55,6 +87,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'email'
 
     objects = UserManager()
+    friendship = UserFriendShipManager()
 
     class Meta:
         verbose_name = _('user')
@@ -65,7 +98,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         return full_name.strip()
 
     def get_short_name(self):
-        return self.first_name if self.first_name else 'User dont have name'
+        return self.first_name if self.first_name else "User don't have name"
 
     def email_user(self, subject, message, from_email=None, **kwargs):
         send_mail(subject, message, from_email, [self.email], **kwargs)
@@ -81,3 +114,43 @@ class UserInfo(models.Model):
         db_table = 'user_info'
         verbose_name = _('user info')
         verbose_name_plural = _('users info')
+
+
+class FriendInviteManager(models.Manager):
+    def is_pending(self, from_user, to_user):
+        from_user_id, to_user_id = get_ids_from_users(from_user, to_user)
+        return self.filter(from_user_id=from_user_id, to_user_id=to_user_id).exists()
+
+    def add(self, from_user, to_user):
+        from_user_id, to_user_id = get_ids_from_users(from_user, to_user)
+        if from_user_id == to_user_id:
+            raise ValueError(_('You can not add yourself as a friend.'))
+        if User.friendship.are_friends(from_user_id, to_user_id):
+            raise ValueError(_('You are already friends.'))
+        if self.is_pending(from_user_id, to_user_id):
+            raise ValueError(_('The application has already been created and is pending.'))
+        if self.is_pending(to_user_id, from_user_id):
+            User.friendship.add(from_user_id, to_user_id)
+            return 2
+        self.create(from_user_id=from_user_id, to_user_id=to_user_id)
+        return 1
+
+    def approve(self, from_user, to_user):
+        from_user_id, to_user_id = get_ids_from_users(from_user, to_user)
+        if not self.is_pending(from_user_id, to_user_id):
+            raise ValueError(_('The application does not exist.'))
+        return User.friendship.add(from_user, to_user)
+
+    def reject(self, from_user, to_user):
+        from_user_id, to_user_id = get_ids_from_users(from_user, to_user)
+        self.filter(from_user_id=from_user_id, to_user_id=to_user_id).delete()
+
+
+class FriendInvite(models.Model):
+    from_user = models.ForeignKey(User, related_name='out_friend_invites', on_delete=models.DO_NOTHING)
+    to_user = models.ForeignKey(User, related_name='in_friend_invites', on_delete=models.DO_NOTHING)
+
+    objects = FriendInviteManager()
+
+    class Meta:
+        unique_together = ('from_user', 'to_user')
