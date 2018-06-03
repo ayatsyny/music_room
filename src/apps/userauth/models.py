@@ -9,33 +9,23 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 
 class UserManager(BaseUserManager):
 
-    def _create_user(self, email, login, password, is_staff, is_superuser, **extra_fields):
+    def _create_user(self, email, password, is_staff, is_superuser, **extra_fields):
         """
-        Creates and saves a User with the given email, login and password.
+        Creates and saves a User with the given email, and password.
         """
         now = timezone.now()
         email = self.normalize_email(email)
-        if not login or (isinstance(login, str) and not login.split()):
-            login = email.split('@')[0]
-        user = self.model(email=email, login=login, is_staff=is_staff, is_active=True, is_superuser=is_superuser,
+        user = self.model(email=email, is_staff=is_staff, is_active=True, is_superuser=is_superuser,
                           date_joined=now, **extra_fields)
-        if self.model.objects.filter(login=login).exists():
-            user.login = '{}{}'.format(login, user.pk)
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_user(self, email, login, password=None, **extra_fields):
-        return self._create_user(email, login, password, False, False, **extra_fields)
+    def create_user(self, email, password=None, **extra_fields):
+        return self._create_user(email, password, False, False, **extra_fields)
 
-    def create_superuser(self, email, login, password, **extra_fields):
-        return self._create_user(email, login, password, True, True, **extra_fields)
-
-    def generate_login(self, login, email):
-        tmp_id = self.objects.latest('id')
-        if not tmp_id:
-            tmp_id = 0
-        return '{}{}{}'.format(login, tmp_id, email.split('@')[0])
+    def create_superuser(self, email, password, **extra_fields):
+        return self._create_user(email, password, True, True, **extra_fields)
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -51,9 +41,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     )
 
     email = models.EmailField(_('email'), unique=True)
-    login = models.CharField(_('login'), max_length=50, unique=True)
-    first_name = models.CharField(_('name'), max_length=30, blank=True)
-    last_name = models.CharField(_('surname'), max_length=30, blank=True)
+    first_name = models.CharField(_('name'), max_length=100, blank=True)
+    last_name = models.CharField(_('surname'), max_length=100, blank=True)
     gender = models.PositiveSmallIntegerField(_('gender'), choices=GENDER_CHOICES, default=GENDER_NONE)
     is_staff = models.BooleanField(_('staff status'), default=False,
                                    help_text=_('Designates whether the user can log into this admin ' 'site.'))
@@ -64,21 +53,19 @@ class User(AbstractBaseUser, PermissionsMixin):
     friends = models.ManyToManyField('self', symmetrical=True, blank=True)
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ('login',)
 
     objects = UserManager()
 
     class Meta:
         verbose_name = _('user')
         verbose_name_plural = _('users')
-        ordering = ('login',)
 
     def get_full_name(self):
         full_name = '{} {}'.format(self.first_name, self.last_name)
         return full_name.strip()
 
     def get_short_name(self):
-        return self.first_name if self.first_name else self.login
+        return self.first_name if self.first_name else 'User dont have name'
 
     def email_user(self, subject, message, from_email=None, **kwargs):
         send_mail(subject, message, from_email, [self.email], **kwargs)
