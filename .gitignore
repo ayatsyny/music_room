@@ -34,3 +34,6 @@ var/media/**
 
 var/tmp/**
 !var/tmp/.gitkeep
+
+# my doc
+docs/my_doc.txt

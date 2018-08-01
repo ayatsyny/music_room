@@ -2,8 +2,11 @@ pip
 setuptools
 pytz
 
-Django==2.0.5
+Django==2.0.8
 Unipath==1.1
 psycopg2-binary==2.7.4
 social-auth-app-django==2.1.0
 django-annoying==0.10.4
+djangorestframework==3.8.2
+markdown==2.6.11
+django-filter==2.0.0

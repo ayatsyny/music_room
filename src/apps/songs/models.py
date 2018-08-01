@@ -27,4 +27,4 @@ class AuthorSong(models.Model):
 class Song(models.Model):
     id = models.PositiveIntegerField(_('id'), primary_key=True)
     name = models.CharField(_('name'), max_length=150)
-    authors = models.ManyToManyField(AuthorSong, related_name='songs', null=False)
+    # authors = models.ManyToManyField(AuthorSong, related_name='songs', null=False)

@@ -1,0 +1,16 @@
+
+Server debian9 (VirtualBox):
+
+ssh ip (local):
+192.168.56.100
+user connect: andriy
+
+login: andriy
+pass:  1111
+
+login: root
+pass: root
+
+exit console postgres in Linux:
+    sudo -u postgres psql postgres
+
